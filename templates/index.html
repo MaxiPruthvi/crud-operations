@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Operations - Employee Table</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0; /* Light gray background */
+            color: #333; /* Dark gray text */
+        }
+
+        h1 {
+            text-align: center;
+            color: #000; /* Black heading */
+        }
+
+        form {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #000; /* Black border */
+            border-radius: 4px;
+            width: 150px;
+            background-color: #fff; /* White background for input fields */
+            color: #000; /* Black text */
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #000; /* Black background for buttons */
+            color: white; /* White text */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #555; /* Darker gray for hover effect */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff; /* White table background */
+        }
+
+        table, th, td {
+            border: 1px solid #000; /* Black border for table, header, and cells */
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            color: #000; /* Black text */
+        }
+
+        th {
+            background-color: #333; /* Dark gray background for headers */
+            color: #fff; /* White text for headers */
+        }
+
+        tr:nth-child(even) {
+            background-color: #e0e0e0; /* Light gray background for alternate rows */
+        }
+
+        tr:hover {
+            background-color: #d0d0d0; /* Slightly darker gray for hover */
+        }
+
+        .update-form {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .update-form input {
+            width: 100px;
+            margin-right: 5px;
+            background-color: #fff;
+            border: 1px solid #000; /* Black borders */
+            color: #000; /* Black text */
+        }
+    </style>
+    <script>
+        function toggleUpdateForm(employeeId) {
+            const form = document.getElementById(`update-form-${employeeId}`);
+            if (form) {
+                form.style.display = form.style.display === 'none' ? 'flex' : 'none';
+            } else {
+                console.error(`Form with id update-form-${employeeId} not found.`);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Employee Table</h1>
+
+    <!-- Form to add new employee -->
+    <form action="/create" method="POST">
+        <input type="text" name="name" placeholder="Employee Name" required>
+        <input type="text" name="mobile" placeholder="Mobile Number" required>
+        <input type="text" name="country" placeholder="Country" required>
+        <button type="submit">Add Employee</button>
+    </form>
+
+    <!-- Table displaying all employees -->
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Employee Name</th>
+                <th>Mobile Number</th>
+                <th>Country</th>
+                <th>Actions</th>
+                <th>Update</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for employee in employees %}
+            <tr>
+                <td>{{ employee.id }}</td>
+                <td>{{ employee.name }}</td>
+                <td>{{ employee.mobile }}</td>
+                <td>{{ employee.country }}</td>
+                <td>
+                    <!-- Form to delete the employee -->
+                    <form action="/delete/{{ employee.id }}" method="POST" style="display:inline;">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+                <td>
+                    <!-- Update button to toggle visibility of update form -->
+                    <button onclick="toggleUpdateForm({{ employee.id }})">Update</button>
+                    <!-- Form to update the employee details -->
+                    <form id="update-form-{{ employee.id }}" action="/update/{{ employee.id }}" method="POST" class="update-form">
+                        <input type="text" name="name" value="{{ employee.name }}" required placeholder="Name">
+                        <input type="text" name="mobile" value="{{ employee.mobile }}" required placeholder="Mobile">
+                        <input type="text" name="country" value="{{ employee.country }}" required placeholder="Country">
+                        <button type="submit">Save</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
