@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRUD Operations - Employee Details</title>
+    <title>CRUD Operations - Employee Table</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -110,6 +110,7 @@
         <input type="text" name="name" placeholder="Employee Name" required>
         <input type="text" name="mobile" placeholder="Mobile Number" required>
         <input type="text" name="country" placeholder="Country" required>
+        <input type="text" name="department" placeholder="Department" required>
         <button type="submit">Add Employee</button>
     </form>
 
@@ -121,6 +122,7 @@
                 <th>Employee Name</th>
                 <th>Mobile Number</th>
                 <th>Country</th>
+                <th>Department</th> <!-- New Department column -->
                 <th>Actions</th>
                 <th>Update</th>
             </tr>
@@ -132,6 +134,7 @@
                 <td>{{ employee.name }}</td>
                 <td>{{ employee.mobile }}</td>
                 <td>{{ employee.country }}</td>
+                <td>{{ employee.department }}</td> <!-- Display department -->
                 <td>
                     <!-- Form to delete the employee -->
                     <form action="/delete/{{ employee.id }}" method="POST" style="display:inline;">
@@ -146,6 +149,7 @@
                         <input type="text" name="name" value="{{ employee.name }}" required placeholder="Name">
                         <input type="text" name="mobile" value="{{ employee.mobile }}" required placeholder="Mobile">
                         <input type="text" name="country" value="{{ employee.country }}" required placeholder="Country">
+                        <input type="text" name="department" value="{{ employee.department }}" required placeholder="Department"> <!-- Department field in update form -->
                         <button type="submit">Save</button>
                     </form>
                 </td>

@@ -1,66 +1,54 @@
 from flask import Flask, render_template, request, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
-
 app = Flask(__name__)
 
-# Configuring SQLite Database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///employees.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+# In-memory storage for employees (replace with a database in production)
+employees = [
+    # {"id": 1, "name": "John Doe", "mobile": "1234567890", "country": "USA", "department": "HR"},
+    # {"id": 2, "name": "Jane Smith", "mobile": "0987654321", "country": "Canada", "department": "Engineering"},
+]
 
-# Employee Model
-class Employee(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    mobile = db.Column(db.String(15), nullable=False)
-    country = db.Column(db.String(50), nullable=False)
+# Function to get the next available ID (for simplicity)
+def get_next_id():
+    if employees:
+        return max(emp["id"] for emp in employees) + 1
+    return 1
 
-    def __repr__(self):
-        return f'<Employee {self.name}>'
-
-# Create the database and tables
-with app.app_context():
-    db.create_all()
-
-# Route to display all employees and the form
+# Route to display the employee table
 @app.route('/')
 def index():
-    employees = Employee.query.all()
     return render_template('index.html', employees=employees)
 
-# Route to add a new employee
+# Route to handle the creation of a new employee
 @app.route('/create', methods=['POST'])
 def create_employee():
-    name = request.form['name']
-    mobile = request.form['mobile']
-    country = request.form['country']
-
-    new_employee = Employee(name=name, mobile=mobile, country=country)
-    db.session.add(new_employee)
-    db.session.commit()
-
+    new_employee = {
+        "id": get_next_id(),
+        "name": request.form['name'],
+        "mobile": request.form['mobile'],
+        "country": request.form['country'],
+        "department": request.form['department']  # Capture department from form
+    }
+    employees.append(new_employee)
     return redirect(url_for('index'))
 
-# Route to delete an employee
+# Route to handle deleting an employee
 @app.route('/delete/<int:id>', methods=['POST'])
 def delete_employee(id):
-    employee = Employee.query.get_or_404(id)
-    db.session.delete(employee)
-    db.session.commit()
-    
+    global employees
+    employees = [emp for emp in employees if emp['id'] != id]
     return redirect(url_for('index'))
 
-# Route to update an employee
+# Route to handle updating an employee
 @app.route('/update/<int:id>', methods=['POST'])
 def update_employee(id):
-    employee = Employee.query.get_or_404(id)
-    employee.name = request.form['name']
-    employee.mobile = request.form['mobile']
-    employee.country = request.form['country']
-
-    db.session.commit()
-    
+    for employee in employees:
+        if employee['id'] == id:
+            employee['name'] = request.form['name']
+            employee['mobile'] = request.form['mobile']
+            employee['country'] = request.form['country']
+            employee['department'] = request.form['department']  # Update department
+            break
     return redirect(url_for('index'))
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
